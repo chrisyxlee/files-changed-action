@@ -46,7 +46,7 @@ outputs:
     description: |
       Whether files between the old and new commit were modified after excluding
       and looking for included files.
-    value: ${{ steps.files-changed.outputs.modified}}
+    value: ${{ steps.files-changed.outputs.modified }}
 
 runs:
   using: "composite"
@@ -57,7 +57,6 @@ runs:
     run: |
       set -e
       set -u
-      set -o pipefail
 
       cd "${GITHUB_WORKSPACE}" || exit 1
 
@@ -70,7 +69,7 @@ runs:
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: All files changed.'
-        echo "${DIFFS}"
+        echo "$(echo "${DIFFS}" | tr ' ' '\n')"
         echo '::endgroup::'
       fi
 
@@ -82,7 +81,7 @@ runs:
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: Exclusion group.'
-        echo "${EXCLUDED}"
+        echo "$(echo "${EXCLUDED}" | tr ' ' '\n')"
         echo '::endgroup::'
       fi
 
@@ -94,7 +93,7 @@ runs:
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: After filtering out excluded.'
-        echo "${DIFFS}"
+        echo "$(echo "${DIFFS}" | tr ' ' '\n')"
         echo '::endgroup::'
       fi
 
@@ -106,7 +105,7 @@ runs:
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: Inclusion group.'
-        echo "${INCLUDED}"
+        echo "$(echo "${INCLUDED}" | tr ' ' '\n')"
         echo '::endgroup::'
       fi
 
@@ -120,6 +119,7 @@ runs:
               echo "$(echo "${MATCH}" | tr ' ' '\n')"
               echo '::endgroup::'
             fi
+            echo "Setting modified to true."
             echo 'modified=true' >> "${GITHUB_OUTPUT}"
             MODIFIED=true
             break
