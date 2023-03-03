@@ -27,6 +27,8 @@ steps:
     new: ${{ github.event.pull_request.head }}
     # The commit containing the old changes to compare against.
     old: ${{ github.event.pull_request.base }}
+		# Suppress logs if you anticipate many files changing.
+		output_diffs: ''
 ```
 
 ## Scenarios

@@ -35,11 +35,11 @@ inputs:
     required: true
     default: HEAD
 
-  debug:
+  output_diffs:
     description: |
-      Whether to log debug outputs
+      Whether to log information about what happens after each filtering step.
     required: false
-    default: 'false'
+    default: 'true'
 
 outputs:
   modified:
@@ -70,7 +70,7 @@ runs:
       set -e
       DIFFS=$(echo "${DIFFS}" | xargs)
 
-      if [ "${{ inputs.debug }}" = 'true' ]; then
+      if [ "${{ inputs.output_diffs }}" = 'true' ]; then
         echo '::group:: All files changed.'
         echo "$(echo "${DIFFS}" | tr ' ' '\n')"
         echo '::endgroup::'
@@ -82,7 +82,7 @@ runs:
       )
       EXCLUDED=$(echo "${EXCLUDED}" | xargs)
 
-      if [ "${{ inputs.debug }}" = 'true' ]; then
+      if [ "${{ inputs.output_diffs }}" = 'true' ]; then
         echo '::group:: Exclusion group.'
         echo "$(echo "${EXCLUDED}" | tr ' ' '\n')"
         echo '::endgroup::'
@@ -94,7 +94,7 @@ runs:
         done
       fi
 
-      if [ "${{ inputs.debug }}" = 'true' ]; then
+      if [ "${{ inputs.output_diffs }}" = 'true' ]; then
         echo '::group:: After filtering out excluded.'
         echo "$(echo "${DIFFS}" | tr ' ' '\n')"
         echo '::endgroup::'
@@ -106,7 +106,7 @@ runs:
       )
       INCLUDED=$(echo "${INCLUDED}" | xargs)
 
-      if [ "${{ inputs.debug }}" = 'true' ]; then
+      if [ "${{ inputs.output_diffs }}" = 'true' ]; then
         echo '::group:: Inclusion group.'
         echo "$(echo "${INCLUDED}" | tr ' ' '\n')"
         echo '::endgroup::'
@@ -120,7 +120,7 @@ runs:
           MATCH=$(echo "${DIFFS}" | grep "${INC}")
           if [ $? -eq 0 ]; then
             set -e
-            if [ "${{ inputs.debug }}" = 'true' ]; then
+            if [ "${{ inputs.output_diffs }}" = 'true' ]; then
               echo "::group:: Matched on pattern ${INC}."
               echo "$(echo "${MATCH}" | tr ' ' '\n')"
               echo '::endgroup::'
