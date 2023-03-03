@@ -75,7 +75,7 @@ runs:
       fi
 
       EXCLUDED=$(cat <<EOF
-      ${{ inputs.excluded }}
+      ${{ inputs.exclude }}
       EOF
       )
       EXCLUDED=$(echo "${EXCLUDED}" | xargs)
@@ -99,7 +99,7 @@ runs:
       fi
 
       INCLUDED=$(cat <<EOF
-      ${{ inputs.included }}
+      ${{ inputs.include }}
       EOF
       )
       INCLUDED=$(echo "${INCLUDED}" | xargs)
