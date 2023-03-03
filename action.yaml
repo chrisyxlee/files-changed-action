@@ -62,14 +62,14 @@ runs:
 
       cd "${GITHUB_WORKSPACE}" || exit 1
 
-      DIFFS=$(git diff ${{ inputs.new }} ${{ inputs.old }})
+      DIFFS=$(git diff --name-only ${{ inputs.new }} ${{ inputs.old }})
       if [ $? -ne 0 ]; then
         >&2 echo "You may need 'fetch-depth: 2' for your checkout action."
         exit 1
       fi
       DIFFS=$(echo "${DIFFS}" | xargs)
 
-      if [ ${{ inputs.debug }} = 'true' ]; then
+      if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: All files changed.'
         echo "${DIFFS}"
         echo '::endgroup::'
@@ -85,7 +85,7 @@ runs:
         DIFFS=$(echo "${DIFFS} | grep -v "${EXC}")
       done
 
-      if [ ${{ inputs.debug }} = 'true' ]; then
+      if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: After filtering out excluded.'
         echo "${DIFFS}
         echo '::endgroup::'
