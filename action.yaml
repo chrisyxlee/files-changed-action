@@ -21,19 +21,15 @@ inputs:
       be filtered out.
     required: false
 
-  old:
+  base_ref:
     description: |
-      The identifier (SHA, tag, branch name) for the commit that contains the
-      oldest diffs.
-    required: true
-    default: HEAD~1
+      The reference to the commit that contains the base changes to diff against.
+    required: false
 
-  new:
+  head_ref:
     description: |
-      The identifier (SHA, tag, branch name) for the commit that contains the
-      newest diffs.
-    required: true
-    default: HEAD
+      The reference to the commit that contains the latest changes.
+    required: false
 
   output_diffs:
     description: |
@@ -44,13 +40,45 @@ inputs:
 outputs:
   modified:
     description: |
-      Whether files between the old and new commit were modified after excluding
+      Whether files between the base_ref and head_ref commit were modified after excluding
       and looking for included files.
     value: ${{ steps.files-changed.outputs.modified }}
 
 runs:
   using: "composite"
   steps:
+  - name: Determine commits to compare
+    id: get-commits
+    shell: bash
+    run: |
+      set -e
+      set -u
+      set -o pipefail
+
+      cd "${GITHUB_WORKSPACE}" || exit 1
+
+      if [ -n "${{ inputs.head_ref }}" ]; then
+        echo "User defined head_ref."
+        echo "head_ref=${{ inputs.head_ref }}" >> $GITHUB_OUTPUT
+      elif [ -n "${{ github.event.pull_request.head.sha }}" ]; then
+        echo "Detecting pull request, using github.event.pull_request.head.sha"
+        echo "head_ref=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+      else
+        echo "No input. Setting head to GITHUB_SHA."
+        echo "head_ref=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+      fi
+
+      if [ -n "${{ inputs.base_ref }}" ]; then
+        echo "User defined base_ref."
+        echo "base_ref=${{ inputs.base_ref }}" >> $GITHUB_OUTPUT
+      elif [ -n "${{ github.event.pull_request.base.sha }}" ]; then
+        echo "Detecting pull request, using github.event.pull_request.base.sha"
+        echo "base_ref=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+      else
+        echo "No input for base_ref. Diffing against last commit."
+        echo "base_ref=HEAD~1" >> $GITHUB_OUTPUT
+      fi
+
   - name: Check files changed
     id: files-changed
     shell: bash
@@ -62,7 +90,7 @@ runs:
       cd "${GITHUB_WORKSPACE}" || exit 1
 
       set +e
-      DIFFS=$(git diff --name-only ${{ inputs.new }} ${{ inputs.old }})
+      DIFFS=$(git diff --name-only ${{ steps.get-commits.outputs.head_ref }} ${{ steps.get-commits.outputs.base_ref }})
       if [ $? -ne 0 ]; then
         >&2 echo "You may need 'fetch-depth: 2' for your checkout action."
         exit 1
@@ -125,7 +153,7 @@ runs:
               echo '::endgroup::'
             fi
             echo "Setting modified to true."
-            echo 'modified=true' >> "${GITHUB_OUTPUT}"
+            echo 'modified=true' >> $GITHUB_OUTPUT
             break
           fi
           set -e

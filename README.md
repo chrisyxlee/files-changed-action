@@ -23,12 +23,12 @@ steps:
     # A list of files to exclude from diffs.
     exclude: |
       .*_test.go$
-    # The commit containing the newest changes.
-    new: ${{ github.event.pull_request.head }}
-    # The commit containing the old changes to compare against.
-    old: ${{ github.event.pull_request.base }}
-		# Suppress logs if you anticipate many files changing.
-		output_diffs: ''
+    # The commit containing the latest changes.
+    head_ref: ${{ github.event.pull_request.head.sha }}
+    # The commit containing the base changes to compare against.
+    base_ref: ${{ github.event.pull_request.base.sha }}
+    # Suppress logs if you anticipate many files changing.
+    output_diffs: ''
 ```
 
 ## Scenarios
