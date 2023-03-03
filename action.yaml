@@ -1,0 +1,104 @@
+# Copyright 2023 Chris Lee (chrisyxlee)
+# SPDX-License-Identifier: Apache-2.0
+
+name: 'files-changed-action'
+description: |
+  This action finds all modified files between the source and destination SHA
+  and pattern matches against a set of regex.
+
+inputs:
+  include:
+    description: |
+      A list of patterns to match against.
+    required: false
+    default: |
+      .*
+
+  exclude:
+    description: |
+      A list of patterns to exclude from the match. The diffs will be filtered
+      prior to checking the include list. If this list is empty, nothing will
+      be filtered out.
+    required: false
+
+  old:
+    description: |
+      The identifier (SHA, tag, branch name) for the commit that contains the
+      oldest diffs.
+    required: true
+    default: HEAD~1
+
+  new:
+    description: |
+      The identifier (SHA, tag, branch name) for the commit that contains the
+      newest diffs.
+    required: true
+    default: HEAD
+
+  debug:
+    description: |
+      Whether to log debug outputs
+    required: false
+    default: false
+
+outputs:
+  modified:
+    description: |
+      Whether files between the old and new commit were modified after excluding
+      and looking for included files.
+    value: ${{ steps.files-changed.outputs.modified}}
+
+runs:
+  using: "composite"
+  steps:
+  - name: Check files changed
+    id: files-changed
+    shell: bash
+    run: |
+      set -e
+      set -x
+      set -u
+      set -o pipefail
+
+      cd "${GITHUB_WORKSPACE}" || exit 1
+
+      DIFFS=$(git diff ${{ inputs.new }} ${{ inputs.old }})
+      if [ $? -ne 0 ]; then
+        >&2 echo "You may need 'fetch-depth: 2' for your checkout action."
+        exit 1
+      fi
+      DIFFS=$(echo "${DIFFS}" | xargs)
+
+      echo '::group:: All files changed.'
+      echo "${DIFFS}"
+      echo '::endgroup::'
+
+      EXCLUDED=$(cat <<EOF
+      ${{ inputs.excluded }}
+      EOF
+      )
+      EXCLUDED=$(echo "${EXCLUDED}" | xargs)
+
+      echo "${EXCLUDED}" | tr ' ' '\n' | while read EXC; do
+        DIFFS=$(echo "${DIFFS} | grep -v "${EXC}")
+      done
+
+      echo '::group:: After filtering out excluded.'
+      echo "${DIFFS}
+      echo '::endgroup::'
+
+      INCLUDED=$(cat <<EOF
+      ${{ inputs.included }}
+      EOF
+      )
+      INCLUDED=$(echo "${INCLUDED}" | xargs)
+
+      echo "${EXCLUDED}" | tr ' ' '\n' | while read INC; do
+        if $(echo "${DIFFS} | grep --quiet "${INC}"); then
+          echo "Matched on ${INC}"
+          echo 'modified=true' >> "${GITHUB_OUTPUT}"
+          exit 0
+        fi
+      done
+
+      echo "modified=false" >> "${GITHUB_OUTPUT}"
