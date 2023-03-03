@@ -57,6 +57,7 @@ runs:
     run: |
       set -e
       set -u
+      set +o pipefail
 
       cd "${GITHUB_WORKSPACE}" || exit 1
 
@@ -128,5 +129,5 @@ runs:
       done
 
       if [ -z "${MODIFIED}" ]; then
-        echo "No relevant files changed."
+        echo 'No relevant files changed.'
       fi
