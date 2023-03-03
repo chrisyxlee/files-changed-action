@@ -113,8 +113,13 @@ runs:
       MODIFIED=
       echo "${INCLUDED}" | tr ' ' '\n' | while read INC; do
         if [ -n "${INC}" ]; then
-          if $(echo "${DIFFS}" | grep --quiet "${INC}"); then
-            echo "Matched on ${INC}"
+          MATCH=$(echo "${DIFFS}" | grep "${INC}")
+          if [ $? -eq 0 ]; then
+            if [ "${{ inputs.debug }}" = 'true' ]; then
+              echo "::group:: Matched on pattern ${INC}."
+              echo "$(echo "${MATCH}" | tr ' ' '\n')"
+              echo '::endgroup::'
+            fi
             echo 'modified=true' >> "${GITHUB_OUTPUT}"
             MODIFIED=true
             break
