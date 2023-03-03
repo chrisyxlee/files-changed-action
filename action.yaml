@@ -80,10 +80,11 @@ runs:
       )
       EXCLUDED=$(echo "${EXCLUDED}" | xargs)
 
-      echo "${EXCLUDED}" | tr ' ' '\n' | while read EXC; do
-        echo "EXC is ${EXC}"
-        DIFFS=$(echo "${DIFFS}" | grep -v "${EXC}")
-      done
+      if [ -n "${EXCLUDED}" ]; then
+        echo "${EXCLUDED}" | tr ' ' '\n' | while read EXC; do
+          DIFFS=$(echo "${DIFFS}" | grep -v "${EXC}")
+        done
+      fi
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
         echo '::group:: After filtering out excluded.'
