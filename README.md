@@ -16,12 +16,12 @@ steps:
 - uses: chrisyxlee/files-changed-action@main
   with:
     # A list of files to look for.
-    includes: |
+    include: |
       .*\.go$
       go.sum$
       go.mod$
     # A list of files to exclude from diffs.
-    excludes: |
+    exclude: |
       .*_test.go$
     # The commit containing the newest changes.
     new: ${{ github.event.pull_request.head }}
@@ -40,11 +40,11 @@ steps:
   id: files-changed
   with:
     # A list of files to look for.
-    includes: |
+    include: |
       .*\.go$
       go.sum$
       go.mod$
-    excludes: |
+    exclude: |
       .*_test.go$
 - name: other-action
   if: files-changed.outputs.modified == 'true'
