@@ -81,7 +81,7 @@ runs:
       EXCLUDED=$(echo "${EXCLUDED}" | xargs)
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
-        echo '::group:: Exclusion group.
+        echo '::group:: Exclusion group.'
         echo "${EXCLUDED}"
         echo '::endgroup::'
       fi
@@ -105,7 +105,7 @@ runs:
       INCLUDED=$(echo "${INCLUDED}" | xargs)
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
-        echo '::group:: Inclusion group.
+        echo '::group:: Inclusion group.'
         echo "${INCLUDED}"
         echo '::endgroup::'
       fi
