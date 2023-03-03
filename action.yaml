@@ -57,6 +57,9 @@ runs:
 
       cd "${GITHUB_WORKSPACE}" || exit 1
 
+      echo "${{ github.event.pull_request }}"
+      echo "${{ github.event.pull_request.head.sha }}"
+      echo "${{ github.event.pull_request.base.sha }}"
       if [ -n "${{ inputs.head_ref }}" ]; then
         echo "User defined head_ref."
         echo "head_ref=${{ inputs.head_ref }}" >> $GITHUB_OUTPUT
