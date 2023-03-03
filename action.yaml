@@ -56,7 +56,6 @@ runs:
     shell: bash
     run: |
       set -e
-      set -x
       set -u
       set -o pipefail
 
@@ -82,6 +81,7 @@ runs:
       EXCLUDED=$(echo "${EXCLUDED}" | xargs)
 
       echo "${EXCLUDED}" | tr ' ' '\n' | while read EXC; do
+        echo "EXC is ${EXC}"
         DIFFS=$(echo "${DIFFS}" | grep -v "${EXC}")
       done
 
@@ -106,4 +106,3 @@ runs:
       done
 
       echo "No relevant files changed."
-      echo "modified=false" >> "${GITHUB_OUTPUT}"
