@@ -98,12 +98,16 @@ runs:
       )
       INCLUDED=$(echo "${INCLUDED}" | xargs)
 
-      echo "${EXCLUDED}" | tr ' ' '\n' | while read INC; do
+      MODIFIED=
+      echo "${INCLUDED}" | tr ' ' '\n' | while read INC; do
         if $(echo "${DIFFS}" | grep --quiet "${INC}"); then
           echo "Matched on ${INC}"
           echo 'modified=true' >> "${GITHUB_OUTPUT}"
-          exit 0
+          MODIFIED=true
+          break
         fi
       done
 
-      echo "No relevant files changed."
+      if [ -z "${MODIFIED}" ]; then
+        echo "No relevant files changed."
+      fi
