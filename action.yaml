@@ -90,7 +90,7 @@ runs:
 
       if [ -n "${EXCLUDED}" ]; then
         echo "${EXCLUDED}" | tr ' ' '\n' | while read EXC; do
-          DIFFS=$(echo "${DIFFS}" | grep -v "${EXC}")
+          DIFFS=$(echo "${DIFFS}" | tr ' ' '\n' |  grep -v "${EXC}")
         done
       fi
 
@@ -112,12 +112,11 @@ runs:
         echo '::endgroup::'
       fi
 
-      MODIFIED=
       echo "${INCLUDED}" | tr ' ' '\n' | while read INC; do
         if [ -n "${INC}" ]; then
           # Allow failures when we can't find anything.
           set +e
-          MATCH=$(echo "${DIFFS}" | grep "${INC}")
+          MATCH=$(echo "${DIFFS}" | tr ' ' '\n' | grep "${INC}")
           if [ $? -eq 0 ]; then
             set -e
             if [ "${{ inputs.output_diffs }}" = 'true' ]; then
@@ -127,13 +126,8 @@ runs:
             fi
             echo "Setting modified to true."
             echo 'modified=true' >> "${GITHUB_OUTPUT}"
-            MODIFIED=true
             break
           fi
           set -e
         fi
       done
-
-      if [ -z "${MODIFIED}" ]; then
-        echo 'No relevant files changed.'
-      fi
