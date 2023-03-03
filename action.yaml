@@ -61,11 +61,13 @@ runs:
 
       cd "${GITHUB_WORKSPACE}" || exit 1
 
+      set +e
       DIFFS=$(git diff --name-only ${{ inputs.new }} ${{ inputs.old }})
       if [ $? -ne 0 ]; then
         >&2 echo "You may need 'fetch-depth: 2' for your checkout action."
         exit 1
       fi
+      set -e
       DIFFS=$(echo "${DIFFS}" | xargs)
 
       if [ "${{ inputs.debug }}" = 'true' ]; then
