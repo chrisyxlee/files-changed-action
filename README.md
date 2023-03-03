@@ -9,20 +9,24 @@ Make sure you set the correct `fetch-depth` for `actions/checkout`. Otherwise, y
 Also refer to [events that trigger workflows](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows) to understand which fields in the GitHub metadata contains the SHAs of commits you want to compare.
 
 ```yaml
+steps:
 - uses: actions/checkout@v3
-	with:
-		fetch-depth: 2
+  with:
+    fetch-depth: 2
 - uses: chrisyxlee/files-changed-action@main
   with:
-		# A list of files to look for.
-		includes: |
-			.*\.go$
-			go.sum$
-			go.mod$
-		excludes: |
-			.*_test.go$
-		new: ${{ github.event.pull_request.head }}
-		old: ${{ github.event.pull_request.base }}
+    # A list of files to look for.
+    includes: |
+      .*\.go$
+      go.sum$
+      go.mod$
+    # A list of files to exclude from diffs.
+    excludes: |
+      .*_test.go$
+    # The commit containing the newest changes.
+    new: ${{ github.event.pull_request.head }}
+    # The commit containing the old changes to compare against.
+    old: ${{ github.event.pull_request.base }}
 ```
 
 ## Scenarios
@@ -30,20 +34,20 @@ Also refer to [events that trigger workflows](https://docs.github.com/en/actions
 ```yaml
 steps:
 - uses: actions/checkout@v3
-	with:
-		fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@main
-	id: files-changed
   with:
-		# A list of files to look for.
-		includes: |
-			.*\.go$
-			go.sum$
-			go.mod$
-		excludes: |
-			.*_test.go$
+    fetch-depth: 2
+- uses: chrisyxlee/files-changed-action@main
+  id: files-changed
+  with:
+    # A list of files to look for.
+    includes: |
+      .*\.go$
+      go.sum$
+      go.mod$
+    excludes: |
+      .*_test.go$
 - name: other-action
-	if: files-changed.outputs.modified == 'true'
-	run: |
-		echo "File was changed."
+  if: files-changed.outputs.modified == 'true'
+  run: |
+    echo "File was changed."
 ```

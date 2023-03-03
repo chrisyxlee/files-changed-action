@@ -39,7 +39,7 @@ inputs:
     description: |
       Whether to log debug outputs
     required: false
-    default: false
+    default: 'false'
 
 outputs:
   modified:
@@ -69,9 +69,11 @@ runs:
       fi
       DIFFS=$(echo "${DIFFS}" | xargs)
 
-      echo '::group:: All files changed.'
-      echo "${DIFFS}"
-      echo '::endgroup::'
+      if [ ${{ inputs.debug }} = 'true' ]; then
+        echo '::group:: All files changed.'
+        echo "${DIFFS}"
+        echo '::endgroup::'
+      fi
 
       EXCLUDED=$(cat <<EOF
       ${{ inputs.excluded }}
@@ -83,9 +85,11 @@ runs:
         DIFFS=$(echo "${DIFFS} | grep -v "${EXC}")
       done
 
-      echo '::group:: After filtering out excluded.'
-      echo "${DIFFS}
-      echo '::endgroup::'
+      if [ ${{ inputs.debug }} = 'true' ]; then
+        echo '::group:: After filtering out excluded.'
+        echo "${DIFFS}
+        echo '::endgroup::'
+      fi
 
       INCLUDED=$(cat <<EOF
       ${{ inputs.included }}
@@ -101,4 +105,5 @@ runs:
         fi
       done
 
+      echo "No relevant files changed."
       echo "modified=false" >> "${GITHUB_OUTPUT}"
