@@ -80,6 +80,12 @@ runs:
       )
       EXCLUDED=$(echo "${EXCLUDED}" | xargs)
 
+      if [ "${{ inputs.debug }}" = 'true' ]; then
+        echo '::group:: Exclusion group.
+        echo "${EXCLUDED}"
+        echo '::endgroup::'
+      fi
+
       if [ -n "${EXCLUDED}" ]; then
         echo "${EXCLUDED}" | tr ' ' '\n' | while read EXC; do
           DIFFS=$(echo "${DIFFS}" | grep -v "${EXC}")
@@ -98,13 +104,21 @@ runs:
       )
       INCLUDED=$(echo "${INCLUDED}" | xargs)
 
+      if [ "${{ inputs.debug }}" = 'true' ]; then
+        echo '::group:: Inclusion group.
+        echo "${INCLUDED}"
+        echo '::endgroup::'
+      fi
+
       MODIFIED=
       echo "${INCLUDED}" | tr ' ' '\n' | while read INC; do
-        if $(echo "${DIFFS}" | grep --quiet "${INC}"); then
-          echo "Matched on ${INC}"
-          echo 'modified=true' >> "${GITHUB_OUTPUT}"
-          MODIFIED=true
-          break
+        if [ -n "${INC}" ]; then
+          if $(echo "${DIFFS}" | grep --quiet "${INC}"); then
+            echo "Matched on ${INC}"
+            echo 'modified=true' >> "${GITHUB_OUTPUT}"
+            MODIFIED=true
+            break
+          fi
         fi
       done
 
