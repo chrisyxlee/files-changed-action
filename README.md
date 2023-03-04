@@ -1,6 +1,6 @@
 # files-changed-action
 
-This action diffs 2 configured commits and outputs whether any of the files match the regex passed into the workflow. Exclusions are applied before inclusions. This action may be useful for determining whether subsequent actions should run.
+This action diffs 2 configured commits and outputs whether any of the files match the regex passed into the workflow. Exclusions are applied before inclusions. This action may be useful for determining whether subsequent actions should run. The regex style is whatever [grep](https://man7.org/linux/man-pages/man1/grep.1.html) accepts.
 
 ## Usage
 
@@ -13,7 +13,7 @@ steps:
 - uses: actions/checkout@v3
   with:
     fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@main
+- uses: chrisyxlee/files-changed-action@v0.0.1
   with:
     # A list of files to look for.
     include: |
@@ -38,7 +38,7 @@ steps:
 - uses: actions/checkout@v3
   with:
     fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@main
+- uses: chrisyxlee/files-changed-action@v0.0.1
   id: files-changed
   with:
     # A list of files to look for.
