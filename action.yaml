@@ -154,3 +154,7 @@ runs:
           fi
         fi
       done
+
+      # Explicitly set the exit code, otherwise the script will return the exit
+      # code of whatever last ran.
+      exit 0
