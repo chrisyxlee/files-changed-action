@@ -13,7 +13,7 @@ steps:
 - uses: actions/checkout@v3
   with:
     fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@v0.0.2
+- uses: chrisyxlee/files-changed-action@v0.0.3
   with:
     # A list of files to look for.
     include: |
@@ -38,7 +38,7 @@ steps:
 - uses: actions/checkout@v3
   with:
     fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@v0.0.2
+- uses: chrisyxlee/files-changed-action@v0.0.3
   id: files-changed
   with:
     # A list of files to look for.

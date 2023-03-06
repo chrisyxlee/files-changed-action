@@ -85,19 +85,16 @@ runs:
     id: files-changed
     shell: bash
     run: |
-      set -e
       set -u
       set -o pipefail
 
       cd "${GITHUB_WORKSPACE}" || exit 1
 
-      set +e
       DIFFS=$(git diff --name-only ${{ steps.get-commits.outputs.head_ref }} ${{ steps.get-commits.outputs.base_ref }})
       if [ $? -ne 0 ]; then
         >&2 echo "You may need 'fetch-depth: 2' for your checkout action."
         exit 1
       fi
-      set -e
       DIFFS=$(echo "${DIFFS}" | xargs)
 
       if [ "${{ inputs.output_diffs }}" = 'true' ]; then
