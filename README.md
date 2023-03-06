@@ -13,7 +13,7 @@ steps:
 - uses: actions/checkout@v3
   with:
     fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@v0.0.1
+- uses: chrisyxlee/files-changed-action@v0.0.2
   with:
     # A list of files to look for.
     include: |
@@ -38,7 +38,7 @@ steps:
 - uses: actions/checkout@v3
   with:
     fetch-depth: 2
-- uses: chrisyxlee/files-changed-action@v0.0.1
+- uses: chrisyxlee/files-changed-action@v0.0.2
   id: files-changed
   with:
     # A list of files to look for.
@@ -49,7 +49,7 @@ steps:
     exclude: |
       .*_test.go$
 - name: other-action
-  if: files-changed.outputs.modified == 'true'
+  if: steps.files-changed.outputs.modified == 'true'
   run: |
     echo "File was changed."
 ```
