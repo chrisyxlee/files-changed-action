@@ -85,6 +85,7 @@ runs:
     id: files-changed
     shell: bash
     run: |
+      set +e
       set -u
       set -o pipefail
 
